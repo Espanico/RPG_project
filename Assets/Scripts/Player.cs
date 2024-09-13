@@ -47,6 +47,7 @@ public class Player : MonoBehaviour
         animator.SetFloat("speed", Mathf.Abs(input.x)+Mathf.Abs(input.y)); // if in movement it will play anomation
 
         if(Input.GetKeyDown("space")) {
+            StartCoroutine(attackMove(aimPosition));
             baseAttack(aimPosition, 5);
         }
     }
@@ -72,5 +73,21 @@ public class Player : MonoBehaviour
         if(Physics2D.OverlapCircleAll(aimPosition, 0.1f, interactableLayer).Count() != 0) {
             Physics2D.OverlapCircleAll(aimPosition, 0.1f, interactableLayer)[0].GetComponent<Enemy>().takeDamage(dmg);
         }
+    }
+
+    IEnumerator attackMove(Vector3 aimPosition) {
+        var startPosition = transform.position;
+        var aimPos = transform.position + (aimPosition-transform.position)*.5f;
+        bool forward = true;
+        while((aimPos - transform.position).sqrMagnitude > Mathf.Epsilon && forward) {
+            transform.position = Vector3.MoveTowards(transform.position, aimPos, 2*moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+        forward = false;
+        while((startPosition - transform.position).sqrMagnitude > Mathf.Epsilon && !forward) {
+            transform.position = Vector3.MoveTowards(transform.position, startPosition, 2*moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+        transform.position = startPosition;
     }
 }
