@@ -7,14 +7,21 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private Animator animator;
+    public GameManager gameManager;
+
+    [Header("Movement")]
     public float moveSpeed;
     public LayerMask solidObjectLayer;
     public LayerMask interactableLayer;
-    private List<Collider2D>enemies;
     private bool isMoving;
     private Vector2 input;
     [SerializeField]
     private Vector3 aimPosition;
+
+    [Header("Combat")]
+    public float maxHealth;
+    private float currentHealth;
+
     
     // Start is called before the first frame update
     void Awake()
@@ -22,6 +29,8 @@ public class Player : MonoBehaviour
         animator = GetComponent<Animator>(); 
         aimPosition = transform.position;
         aimPosition.x += 0.32f;
+
+        currentHealth = maxHealth;
     }
 
     // Update is called once per frame
@@ -41,14 +50,16 @@ public class Player : MonoBehaviour
                     aimPosition = targetPos;
                     aimPosition.x += input.x * .32f;
                     aimPosition.y += input.y * .32f;
+                    endTurn();
                 }
             }
         }
         animator.SetFloat("speed", Mathf.Abs(input.x)+Mathf.Abs(input.y)); // if in movement it will play anomation
 
         if(Input.GetKeyDown("space")) {
-            StartCoroutine(attackMove(aimPosition));
+            StartCoroutine(attackMovement(aimPosition));
             baseAttack(aimPosition, 5);
+            endTurn();
         }
     }
 
@@ -75,7 +86,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    IEnumerator attackMove(Vector3 aimPosition) {
+    IEnumerator attackMovement(Vector3 aimPosition) {
         var startPosition = transform.position;
         var aimPos = transform.position + (aimPosition-transform.position)*.5f;
         bool forward = true;
@@ -89,5 +100,9 @@ public class Player : MonoBehaviour
             yield return null;
         }
         transform.position = startPosition;
+    }
+
+    private void endTurn() {
+        gameManager.GetComponent<GameManager>().enemiesTurn();
     }
 }
