@@ -37,19 +37,20 @@ public class Player : MonoBehaviour
     void Update()
     {
         if(Input.GetKey(KeyCode.LeftShift)) {
+            
             if(Input.GetKeyDown("w")) {
                 input.y = .32f;
                 aimPosition.y = transform.position.y + input.y;
                 aimPosition.x = transform.position.x;
-            } if(Input.GetKeyDown("a")) {
+            }else if(Input.GetKeyDown("a")) {
                 input.x = -.32f;
                 aimPosition.x = transform.position.x + input.x;
                 aimPosition.y = transform.position.y;
-            } if(Input.GetKeyDown("s")) {
+            }else if(Input.GetKeyDown("s")) {
                 input.y = -.32f;
                 aimPosition.y = transform.position.y + input.y;
                 aimPosition.x = transform.position.x;
-            } if(Input.GetKeyDown("d")) {
+            }else if(Input.GetKeyDown("d")) {
                 input.x = .32f;
                 aimPosition.x = transform.position.x + input.x;
                 aimPosition.y = transform.position.y;
@@ -108,8 +109,9 @@ public class Player : MonoBehaviour
     }
 
     void baseAttack(Vector3 aimPosition, float dmg) {
-        if(Physics2D.OverlapCircleAll(aimPosition, 0.1f, interactableLayer).Count() != 0) {
-            Physics2D.OverlapCircleAll(aimPosition, 0.1f, interactableLayer)[0].GetComponent<Enemy>().takeDamage(dmg);
+        var lis = Physics2D.OverlapCircleAll(aimPosition, 0.1f, interactableLayer);
+        if(lis.Count() != 0) {
+            lis[0].GetComponent<Enemy>().takeDamage(dmg);
         }
     }
 
