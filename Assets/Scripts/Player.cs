@@ -36,7 +36,28 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!isMoving) {
+        if(Input.GetKey(KeyCode.LeftShift)) {
+            if(Input.GetKeyDown("w")) {
+                input.y = .32f;
+                aimPosition.y = transform.position.y + input.y;
+                aimPosition.x = transform.position.x;
+            } if(Input.GetKeyDown("a")) {
+                input.x = -.32f;
+                aimPosition.x = transform.position.x + input.x;
+                aimPosition.y = transform.position.y;
+            } if(Input.GetKeyDown("s")) {
+                input.y = -.32f;
+                aimPosition.y = transform.position.y + input.y;
+                aimPosition.x = transform.position.x;
+            } if(Input.GetKeyDown("d")) {
+                input.x = .32f;
+                aimPosition.x = transform.position.x + input.x;
+                aimPosition.y = transform.position.y;
+            }
+            
+            
+        }
+        else if(!isMoving) {
             input.x = Input.GetAxisRaw("Horizontal");
             input.y = Input.GetAxisRaw("Vertical");
 
@@ -45,22 +66,28 @@ public class Player : MonoBehaviour
                 targetPos.x += input.x * .32f;
                 targetPos.y += input.y * .32f;
 
+                aimPosition = targetPos;
+                aimPosition.x += input.x * .32f;
+                aimPosition.y += input.y * .32f;
+
                 if(isWalkable(targetPos)) {
                     StartCoroutine(Move(targetPos));
-                    aimPosition = targetPos;
-                    aimPosition.x += input.x * .32f;
-                    aimPosition.y += input.y * .32f;
+                    
                     endTurn();
+                } else {
+                    aimPosition.x -= input.x * .32f;
+                    aimPosition.y -= input.y * .32f;
                 }
             }
+            if(Input.GetKeyDown("space")) {
+                StartCoroutine(attackMovement(aimPosition));
+                baseAttack(aimPosition, 5);
+                endTurn();
+            }
         }
-        animator.SetFloat("speed", Mathf.Abs(input.x)+Mathf.Abs(input.y)); // if in movement it will play anomation
+        animator.SetFloat("speed", Mathf.Abs(input.x)+Mathf.Abs(input.y)); // if in movement it will play animation
 
-        if(Input.GetKeyDown("space")) {
-            StartCoroutine(attackMovement(aimPosition));
-            baseAttack(aimPosition, 5);
-            endTurn();
-        }
+        
     }
 
     IEnumerator Move(Vector3 targetPos) {
@@ -87,19 +114,21 @@ public class Player : MonoBehaviour
     }
 
     IEnumerator attackMovement(Vector3 aimPosition) {
+        isMoving = true;
         var startPosition = transform.position;
         var aimPos = transform.position + (aimPosition-transform.position)*.5f;
-        bool forward = true;
-        while((aimPos - transform.position).sqrMagnitude > Mathf.Epsilon && forward) {
+        bool isForward = true;
+        while((aimPos - transform.position).sqrMagnitude > Mathf.Epsilon && isForward) {
             transform.position = Vector3.MoveTowards(transform.position, aimPos, 2*moveSpeed * Time.deltaTime);
             yield return null;
         }
-        forward = false;
-        while((startPosition - transform.position).sqrMagnitude > Mathf.Epsilon && !forward) {
+        isForward = false;
+        while((startPosition - transform.position).sqrMagnitude > Mathf.Epsilon && !isForward) {
             transform.position = Vector3.MoveTowards(transform.position, startPosition, 2*moveSpeed * Time.deltaTime);
             yield return null;
         }
         transform.position = startPosition;
+        isMoving = false;
     }
 
     private void endTurn() {
