@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     private float currentHealth;
 
     [Header("Movement")]
+    public float moveSpeed;
     public LayerMask solidObjectLayer;
     public LayerMask playerLayer;
     public LayerMask interactableLayer;
@@ -46,6 +47,8 @@ public class Enemy : MonoBehaviour
             int number = Random.Range(0,5);
             switch (number)
             {
+            case 0: 
+                break;
             case 1: 
                 targetPos.x += .32f;
                 break;
@@ -63,7 +66,7 @@ public class Enemy : MonoBehaviour
                 walked = true;
             }
         }
-        transform.position = targetPos;
+        StartCoroutine(Move(targetPos));
     }
 
     private bool isWalkable(Vector3 targetPos) {
@@ -71,5 +74,13 @@ public class Enemy : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    IEnumerator Move(Vector3 targetPos) {
+        while((targetPos - transform.position).sqrMagnitude > Mathf.Epsilon) {
+            transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+        transform.position = targetPos;
     }
 }

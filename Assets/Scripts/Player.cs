@@ -1,94 +1,62 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
+using Unity.IO.LowLevel.Unsafe;
+//using System.Numerics;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
-    private Animator animator;
     public GameManager gameManager;
-
     [Header("Movement")]
     public float moveSpeed;
+    private bool isMoving;
     public LayerMask solidObjectLayer;
     public LayerMask interactableLayer;
-    private bool isMoving;
-    private Vector2 input;
+    private Vector2 _moveDirection;
+    public InputActionReference move;
+    public InputActionReference attack;
+
     [SerializeField]
-    private Vector3 aimPosition;
+    private Vector2 input;
 
     [Header("Combat")]
-    public float maxHealth;
-    private float currentHealth;
+    public GameObject aimedPositionSquare;
+    private bool attackValue;
+    public List<GameObject> colliderList = new List<GameObject>();
 
-    
-    // Start is called before the first frame update
     void Awake()
     {
-        animator = GetComponent<Animator>(); 
-        aimPosition = transform.position;
-        aimPosition.x += 0.32f;
-
-        currentHealth = maxHealth;
+        //animator = GetComponent<Animator>();
+        //currentHealth = maxHealth;
     }
+    
 
-    // Update is called once per frame
     void Update()
     {
-        if(Input.GetKey(KeyCode.LeftShift)) {
-            
-            if(Input.GetKeyDown("w")) {
-                input.y = .32f;
-                aimPosition.y = transform.position.y + input.y;
-                aimPosition.x = transform.position.x;
-            }else if(Input.GetKeyDown("a")) {
-                input.x = -.32f;
-                aimPosition.x = transform.position.x + input.x;
-                aimPosition.y = transform.position.y;
-            }else if(Input.GetKeyDown("s")) {
-                input.y = -.32f;
-                aimPosition.y = transform.position.y + input.y;
-                aimPosition.x = transform.position.x;
-            }else if(Input.GetKeyDown("d")) {
-                input.x = .32f;
-                aimPosition.x = transform.position.x + input.x;
-                aimPosition.y = transform.position.y;
-            }
-            
-            
-        }
-        else if(!isMoving) {
-            input.x = Input.GetAxisRaw("Horizontal");
-            input.y = Input.GetAxisRaw("Vertical");
+        if(!isMoving) {
+            input = move.action.ReadValue<Vector2>();
 
             if(input != Vector2.zero) {
                 var targetPos = transform.position;
-                targetPos.x += input.x * .32f;
-                targetPos.y += input.y * .32f;
+                targetPos.x += input.x;
+                targetPos.y += input.y;
 
-                aimPosition = targetPos;
-                aimPosition.x += input.x * .32f;
-                aimPosition.y += input.y * .32f;
+                aimedPositionSquare.transform.position = targetPos;
 
-                if(isWalkable(targetPos)) {
+                if(isWalkable(targetPos))  {
                     StartCoroutine(Move(targetPos));
-                    
-                    endTurn();
-                } else {
-                    aimPosition.x -= input.x * .32f;
-                    aimPosition.y -= input.y * .32f;
                 }
             }
-            if(Input.GetKeyDown("space")) {
-                StartCoroutine(attackMovement(aimPosition));
-                baseAttack(aimPosition, 5);
-                endTurn();
-            }
         }
-        animator.SetFloat("speed", Mathf.Abs(input.x)+Mathf.Abs(input.y)); // if in movement it will play animation
+    }
 
-        
+    private bool isWalkable(Vector3 targetPos) {
+        if(Physics2D.OverlapCircle(targetPos, 0.1f, solidObjectLayer | interactableLayer) != null) {
+            return false;
+        }
+        return true;
     }
 
     IEnumerator Move(Vector3 targetPos) {
@@ -99,41 +67,34 @@ public class Player : MonoBehaviour
         }
         transform.position = targetPos;
         isMoving = false;
+        EndTurn();
     }
 
-    private bool isWalkable(Vector3 targetPos) {
-        if(Physics2D.OverlapCircle(targetPos, 0.1f, solidObjectLayer | interactableLayer) != null) {
-            return false;
-        }
-        return true;
+
+
+    private void OnEnable() {
+        attack.action.started += Attack;
     }
 
-    void baseAttack(Vector3 aimPosition, float dmg) {
-        var lis = Physics2D.OverlapCircleAll(aimPosition, 0.1f, interactableLayer);
-        if(lis.Count() != 0) {
-            lis[0].GetComponent<Enemy>().takeDamage(dmg);
+    private void OnDisable() {
+        attack.action.started -= Attack;
+    }
+
+    private void Attack(InputAction.CallbackContext obj) {
+        if(!isMoving) {
+            int num = colliderList.Count;
+            if(num > 0) {
+                for (int i = 0; i < num; i++)
+                {
+                    colliderList[i].GetComponent<Enemy>().takeDamage(5);
+                }
+            }
+            EndTurn();
+            Debug.Log("ATTACCO");
         }
     }
 
-    IEnumerator attackMovement(Vector3 aimPosition) {
-        isMoving = true;
-        var startPosition = transform.position;
-        var aimPos = transform.position + (aimPosition-transform.position)*.5f;
-        bool isForward = true;
-        while((aimPos - transform.position).sqrMagnitude > Mathf.Epsilon && isForward) {
-            transform.position = Vector3.MoveTowards(transform.position, aimPos, 2*moveSpeed * Time.deltaTime);
-            yield return null;
-        }
-        isForward = false;
-        while((startPosition - transform.position).sqrMagnitude > Mathf.Epsilon && !isForward) {
-            transform.position = Vector3.MoveTowards(transform.position, startPosition, 2*moveSpeed * Time.deltaTime);
-            yield return null;
-        }
-        transform.position = startPosition;
-        isMoving = false;
-    }
-
-    private void endTurn() {
+    private void EndTurn() {
         gameManager.GetComponent<GameManager>().enemiesTurn();
     }
 }
