@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
                 if(enemyList[i].IsDestroyed()) {
                     enemyList.RemoveAt(i);
                 } else {
-                    enemyList[i].GetComponent<Enemy>().performAction();
+                    enemyList[i].GetComponent<Enemy>().PerformAction();
                 }
             }
             isPlayerTurn = true;

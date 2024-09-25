@@ -22,14 +22,17 @@ public class Player : MonoBehaviour
     private Vector2 input;
 
     [Header("Combat")]
+    //public float startHealth;
+    public float maxHealth;
+    private float currentHealth;
     public GameObject aimedPositionSquare;
-    private bool attackValue;
     public List<GameObject> colliderList = new List<GameObject>();
 
     void Awake()
     {
         //animator = GetComponent<Animator>();
-        //currentHealth = maxHealth;
+        currentHealth = maxHealth;
+
     }
     
 
@@ -86,15 +89,43 @@ public class Player : MonoBehaviour
             if(num > 0) {
                 for (int i = 0; i < num; i++)
                 {
-                    colliderList[i].GetComponent<Enemy>().takeDamage(5);
+                    colliderList[i].GetComponent<Enemy>().TakeDamage(5);
                 }
             }
-            EndTurn();
-            Debug.Log("ATTACCO");
+            StartCoroutine(AttackMovement());
         }
+    }
+
+    IEnumerator AttackMovement() {
+        isMoving = true;
+        var startPosition = transform.position;
+        var attackedPosition = aimedPositionSquare.transform.position;
+        bool movingForward = true;
+
+        while((attackedPosition - transform.position).sqrMagnitude > Mathf.Epsilon && movingForward) {
+            transform.position = Vector3.MoveTowards(transform.position, attackedPosition, 3*moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+        movingForward = false;
+        while((startPosition - transform.position).sqrMagnitude > Mathf.Epsilon && !movingForward) {
+            transform.position = Vector3.MoveTowards(transform.position, startPosition, 3*moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+        transform.position = startPosition;
+        isMoving = false;
+        EndTurn();
     }
 
     private void EndTurn() {
         gameManager.GetComponent<GameManager>().enemiesTurn();
+    }
+
+    public void TakeDamage(float dmg) {
+        currentHealth -= dmg;
+        if(currentHealth <= 0) {
+            Destroy(gameObject);
+            Debug.Log("*** GAME OVER ***");
+            Time.timeScale = 0;
+        }
     }
 }

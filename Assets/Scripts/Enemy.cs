@@ -9,6 +9,8 @@ public class Enemy : MonoBehaviour
     public float maxHealth;
     [SerializeField]
     private float currentHealth;
+    public float attackDamage;
+    public GameObject player;
 
     [Header("Movement")]
     public float moveSpeed;
@@ -28,18 +30,24 @@ public class Enemy : MonoBehaviour
         
     }
 
-    public void takeDamage(float dmg) {
+    public void TakeDamage(float dmg) {
         currentHealth -= dmg;
         if(currentHealth <= 0) {
             Destroy(gameObject);
         }
     }
 
-    public void performAction() {
-        randomMovement();
+    public void PerformAction() {
+        float playerDistance = (player.transform.position - transform.position).magnitude;
+        if(playerDistance > .46f) {
+            RandomMovement();
+        } else {
+            Attack();
+            Debug.Log("ENEMY ATTACK");
+        }
     }
 
-    private void randomMovement() {
+    private void RandomMovement() {
         bool walked = false;
         var targetPos = transform.position;
         while(!walked) {
@@ -82,5 +90,27 @@ public class Enemy : MonoBehaviour
             yield return null;
         }
         transform.position = targetPos;
+    }
+
+    IEnumerator AttackMovement() {
+        var startPosition = transform.position;
+        var attackedPosition = player.transform.position;
+        bool movingForward = true;
+
+        while((attackedPosition - transform.position).sqrMagnitude > Mathf.Epsilon && movingForward) {
+            transform.position = Vector3.MoveTowards(transform.position, attackedPosition, 3*moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+        movingForward = false;
+        while((startPosition - transform.position).sqrMagnitude > Mathf.Epsilon && !movingForward) {
+            transform.position = Vector3.MoveTowards(transform.position, startPosition, 3*moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+        transform.position = startPosition;
+    }
+
+    private void Attack() {
+        StartCoroutine(AttackMovement());
+        player.GetComponent<Player>().TakeDamage(attackDamage);
     }
 }
