@@ -39,11 +39,13 @@ public class Enemy : MonoBehaviour
 
     public void PerformAction() {
         float playerDistance = (player.transform.position - transform.position).magnitude;
-        if(playerDistance > .46f) {
-            RandomMovement();
-        } else {
+        if(playerDistance <= .46f) {
             Attack();
             Debug.Log("ENEMY ATTACK");
+        } else if(playerDistance < 1.4f) {
+            MoveToPlayer(playerDistance);
+        } else {
+            RandomMovement();
         }
     }
 
@@ -71,6 +73,40 @@ public class Enemy : MonoBehaviour
                 break;
             }
             if(isWalkable(targetPos)) {
+                walked = true;
+            }
+        }
+        StartCoroutine(Move(targetPos));
+    }
+
+    private void MoveToPlayer(float playerDistance) {
+        bool walked = false;
+        var targetPos = transform.position;
+        int number = 0;
+        while(!walked) {
+            targetPos = transform.position;
+            number++;
+            switch (number)
+            {
+            case 1: 
+                targetPos.x += .32f;
+                break;
+            case 2:
+                targetPos.x -= .32f;
+                break;
+            case 3:
+                targetPos.y += .32f;
+                break;
+            case 4:
+                targetPos.y -= .32f;
+                break;
+            default:
+                targetPos = transform.position;
+                walked = true;
+                break;
+            }
+            if(isWalkable(targetPos) && (player.transform.position - targetPos).magnitude < playerDistance) {
+                Debug.Log("ENEMY GETTING CLOSER");
                 walked = true;
             }
         }

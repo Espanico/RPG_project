@@ -9,6 +9,7 @@ using UnityEngine.UIElements;
 public class Player : MonoBehaviour
 {
     public GameManager gameManager;
+    private Animator animator;
     [Header("Movement")]
     public float moveSpeed;
     private bool isMoving;
@@ -25,14 +26,16 @@ public class Player : MonoBehaviour
     //public float startHealth;
     public float maxHealth;
     private float currentHealth;
+    public float startDamage;
+    private float damage;
     public GameObject aimedPositionSquare;
     public List<GameObject> colliderList = new List<GameObject>();
 
     void Awake()
     {
-        //animator = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
         currentHealth = maxHealth;
-
+        damage = startDamage;
     }
     
 
@@ -49,6 +52,7 @@ public class Player : MonoBehaviour
                 aimedPositionSquare.transform.position = targetPos;
 
                 if(isWalkable(targetPos))  {
+                    animator.SetFloat("vertical speed", 10*(targetPos.y-transform.position.y));
                     StartCoroutine(Move(targetPos));
                 }
             }
@@ -69,6 +73,7 @@ public class Player : MonoBehaviour
             yield return null;
         }
         transform.position = targetPos;
+        animator.SetFloat("vertical speed", 0);
         isMoving = false;
         EndTurn();
     }
@@ -89,7 +94,7 @@ public class Player : MonoBehaviour
             if(num > 0) {
                 for (int i = 0; i < num; i++)
                 {
-                    colliderList[i].GetComponent<Enemy>().TakeDamage(5);
+                    colliderList[i].GetComponent<Enemy>().TakeDamage(damage);
                 }
             }
             StartCoroutine(AttackMovement());
