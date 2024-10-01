@@ -9,6 +9,7 @@ using UnityEngine.UIElements;
 public class Player : MonoBehaviour
 {
     public GameManager gameManager;
+    public Vector3 updatedPlayerPosition;
     private Animator animator;
     [Header("Movement")]
     public float moveSpeed;
@@ -33,6 +34,7 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
+        updatedPlayerPosition = transform.position;
         animator = GetComponent<Animator>();
         currentHealth = maxHealth;
         damage = startDamage;
@@ -41,19 +43,21 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if(!isMoving) {
-            input = move.action.ReadValue<Vector2>();
+        if(gameManager.isPlayerTurn) {
+            if(!isMoving) {
+                input = move.action.ReadValue<Vector2>();
 
-            if(input != Vector2.zero) {
-                var targetPos = transform.position;
-                targetPos.x += input.x;
-                targetPos.y += input.y;
+                if(input != Vector2.zero) {
+                    var targetPos = transform.position;
+                    targetPos.x += input.x;
+                    targetPos.y += input.y;
 
-                aimedPositionSquare.transform.position = targetPos;
+                    aimedPositionSquare.transform.position = targetPos;
 
-                if(isWalkable(targetPos))  {
-                    animator.SetFloat("vertical speed", 10*(targetPos.y-transform.position.y));
-                    StartCoroutine(Move(targetPos));
+                    if(isWalkable(targetPos))  {
+                        animator.SetFloat("vertical speed", 10*(targetPos.y-transform.position.y));
+                        StartCoroutine(Move(targetPos));
+                    }
                 }
             }
         }
@@ -67,6 +71,7 @@ public class Player : MonoBehaviour
     }
 
     IEnumerator Move(Vector3 targetPos) {
+        updatedPlayerPosition = targetPos;
         isMoving = true;
         while((targetPos - transform.position).sqrMagnitude > Mathf.Epsilon) {
             transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);

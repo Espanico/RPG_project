@@ -14,6 +14,7 @@ public class Enemy : MonoBehaviour
 
     [Header("Movement")]
     public float moveSpeed;
+    public int watchDistance;
     public LayerMask solidObjectLayer;
     public LayerMask playerLayer;
     public LayerMask interactableLayer;
@@ -38,12 +39,14 @@ public class Enemy : MonoBehaviour
     }
 
     public void PerformAction() {
-        float playerDistance = (player.transform.position - transform.position).magnitude;
+        float playerDistance = (player.GetComponent<Player>().updatedPlayerPosition - transform.position).magnitude;
         if(playerDistance <= .46f) {
             Attack();
             Debug.Log("ENEMY ATTACK");
-        } else if(playerDistance < 1.4f) {
-            MoveToPlayer(playerDistance);
+        } else if(playerDistance < watchDistance*.32f) {
+            //Debug.Log("PLAYER DETECTED");
+            //MoveToPlayer(playerDistance);
+            NewMoveToPlayer();
         } else {
             RandomMovement();
         }
@@ -105,12 +108,17 @@ public class Enemy : MonoBehaviour
                 walked = true;
                 break;
             }
-            if(isWalkable(targetPos) && (player.transform.position - targetPos).magnitude < playerDistance) {
+            if(isWalkable(targetPos) && (player.GetComponent<Player>().updatedPlayerPosition - targetPos).magnitude < playerDistance) {
                 Debug.Log("ENEMY GETTING CLOSER");
                 walked = true;
             }
         }
         StartCoroutine(Move(targetPos));
+    }
+
+    private void NewMoveToPlayer() {
+        Vector3 pathVector = EnemyPathfinding.Instance.FindPath(transform.position, player.GetComponent<Player>().updatedPlayerPosition);
+        StartCoroutine(Move(pathVector));
     }
 
     private bool isWalkable(Vector3 targetPos) {
@@ -130,7 +138,7 @@ public class Enemy : MonoBehaviour
 
     IEnumerator AttackMovement() {
         var startPosition = transform.position;
-        var attackedPosition = player.transform.position;
+        var attackedPosition = player.GetComponent<Player>().updatedPlayerPosition;
         bool movingForward = true;
 
         while((attackedPosition - transform.position).sqrMagnitude > Mathf.Epsilon && movingForward) {
