@@ -10,7 +10,7 @@ public class ColliderChecker : MonoBehaviour
         
     }
     private void OnTriggerEnter2D(Collider2D coll) {
-        if(!player.GetComponent<Player>().colliderList.Contains(coll.gameObject) && coll.tag == "Enemy") {
+        if(!player.GetComponent<Player>().colliderList.Contains(coll.gameObject) && (coll.tag == "Enemy" || coll.tag ==  "Item")) {
             player.GetComponent<Player>().colliderList.Add(coll.gameObject);
         }
     }

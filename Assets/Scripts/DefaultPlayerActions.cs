@@ -41,7 +41,7 @@ public partial class @DefaultPlayerActions: IInputActionCollection2, IDisposable
                     ""type"": ""Value"",
                     ""id"": ""d4e782bb-cbb9-4830-a685-0f6a865b72de"",
                     ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
+                    ""processors"": ""ScaleVector2(x=0.32,y=0.32)"",
                     ""interactions"": """",
                     ""initialStateCheck"": true
                 },
@@ -71,7 +71,7 @@ public partial class @DefaultPlayerActions: IInputActionCollection2, IDisposable
                     ""name"": ""WASD"",
                     ""id"": ""00ca640b-d935-4593-8157-c05846ea39b3"",
                     ""path"": ""Dpad(mode=1)"",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold(duration=0.075)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Move"",
@@ -158,8 +158,8 @@ public partial class @DefaultPlayerActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""2D Vector"",
                     ""id"": ""4f2c590b-f734-4b07-a5e2-4a790a8358db"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
+                    ""path"": ""2DVector(mode=1)"",
+                    ""interactions"": ""Hold(duration=0.1)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Look"",

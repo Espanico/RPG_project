@@ -10,15 +10,17 @@ public class Player : MonoBehaviour
 {
     public GameManager gameManager;
     public Vector3 updatedPlayerPosition;
+    public InputActionReference move;
+    public InputActionReference attack;
+    public InputActionReference look;
     private Animator animator;
     [Header("Movement")]
     public float moveSpeed;
     private bool isMoving;
+    private bool heldMovement = false;
     public LayerMask solidObjectLayer;
     public LayerMask interactableLayer;
     private Vector2 _moveDirection;
-    public InputActionReference move;
-    public InputActionReference attack;
 
     [SerializeField]
     private Vector2 input;
@@ -26,6 +28,7 @@ public class Player : MonoBehaviour
     [Header("Combat")]
     //public float startHealth;
     public float maxHealth;
+    [SerializeField]
     private float currentHealth;
     public float startDamage;
     private float damage;
@@ -44,7 +47,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         if(gameManager.isPlayerTurn) {
-            if(!isMoving) {
+            if(!isMoving && heldMovement) {
                 input = move.action.ReadValue<Vector2>();
 
                 if(input != Vector2.zero) {
@@ -57,6 +60,7 @@ public class Player : MonoBehaviour
                     if(isWalkable(targetPos))  {
                         animator.SetFloat("vertical speed", 10*(targetPos.y-transform.position.y));
                         StartCoroutine(Move(targetPos));
+                        EndTurn();
                     }
                 }
             }
@@ -80,17 +84,23 @@ public class Player : MonoBehaviour
         transform.position = targetPos;
         animator.SetFloat("vertical speed", 0);
         isMoving = false;
-        EndTurn();
+        //EndTurn();
     }
 
 
 
     private void OnEnable() {
         attack.action.started += Attack;
+        move.action.performed += Movement;
+        move.action.canceled += LiftMovement;
+        look.action.performed += Aim;
     }
 
     private void OnDisable() {
         attack.action.started -= Attack;
+        move.action.performed -= Movement;
+        move.action.canceled -= LiftMovement;
+        look.action.performed += Aim;
     }
 
     private void Attack(InputAction.CallbackContext obj) {
@@ -99,10 +109,49 @@ public class Player : MonoBehaviour
             if(num > 0) {
                 for (int i = 0; i < num; i++)
                 {
-                    colliderList[i].GetComponent<Enemy>().TakeDamage(damage);
+                    if(colliderList[i].tag == "Enemy") {
+                        colliderList[i].GetComponent<Enemy>().TakeDamage(damage);
+                    } else if(colliderList[i].tag == "Item") {
+                        colliderList[i].GetComponent<ItemPickup>().PickUp();
+                    }
                 }
             }
             StartCoroutine(AttackMovement());
+        }
+    }
+
+    private void Movement(InputAction.CallbackContext obj) {
+        if(gameManager.isPlayerTurn) {
+            if(!isMoving) {
+                input = move.action.ReadValue<Vector2>();
+
+                if(input != Vector2.zero) {
+                    var targetPos = transform.position;
+                    targetPos.x += input.x;
+                    targetPos.y += input.y;
+
+                    aimedPositionSquare.transform.position = targetPos;
+
+                    if(isWalkable(targetPos))  {
+                        animator.SetFloat("vertical speed", 10*(targetPos.y-transform.position.y));
+                        StartCoroutine(Move(targetPos));
+                        EndTurn();
+                    }
+                }
+            }
+        }
+        heldMovement = true;
+    }
+
+    private void LiftMovement(InputAction.CallbackContext obj) {
+        heldMovement = false;
+    }
+
+    private void Aim(InputAction.CallbackContext obj) {
+        if(gameManager.isPlayerTurn && !isMoving) {
+            input = look.action.ReadValue<Vector2>();
+
+            aimedPositionSquare.transform.position = transform.position + new Vector3(input.x, input.y);
         }
     }
 
@@ -113,12 +162,12 @@ public class Player : MonoBehaviour
         bool movingForward = true;
 
         while((attackedPosition - transform.position).sqrMagnitude > Mathf.Epsilon && movingForward) {
-            transform.position = Vector3.MoveTowards(transform.position, attackedPosition, 3*moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, attackedPosition, 2*moveSpeed * Time.deltaTime);
             yield return null;
         }
         movingForward = false;
         while((startPosition - transform.position).sqrMagnitude > Mathf.Epsilon && !movingForward) {
-            transform.position = Vector3.MoveTowards(transform.position, startPosition, 3*moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, startPosition, 2*moveSpeed * Time.deltaTime);
             yield return null;
         }
         transform.position = startPosition;
