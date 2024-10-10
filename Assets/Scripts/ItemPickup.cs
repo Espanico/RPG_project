@@ -6,7 +6,9 @@ public class ItemPickup : MonoBehaviour
 {
     public Item item;
     public void PickUp() {
-        Inventory.instance.Add(item);
-        Destroy(gameObject);
+        bool wasPickedUp = Inventory.instance.Add(item);
+        if(wasPickedUp) {
+            Destroy(gameObject);
+        }
     }
 }

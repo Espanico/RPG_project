@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: New Item
   m_EditorClassIdentifier: 
   name: Helmet of Protection
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 36186d833bc74f9489f103c269aecb59, type: 3}
   isDefaultItem: 0
