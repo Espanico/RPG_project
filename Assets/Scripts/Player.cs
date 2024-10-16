@@ -13,6 +13,8 @@ public class Player : MonoBehaviour
     public InputActionReference move;
     public InputActionReference attack;
     public InputActionReference look;
+    public InputActionReference menu;
+    public GameObject inventoryUI;
     private Animator animator;
     [Header("Movement")]
     public float moveSpeed;
@@ -90,20 +92,22 @@ public class Player : MonoBehaviour
 
 
     private void OnEnable() {
-        attack.action.started += Attack;
+        attack.action.started += Interact;
         move.action.performed += Movement;
         move.action.canceled += LiftMovement;
         look.action.performed += Aim;
+        menu.action.performed += Menu;
     }
 
     private void OnDisable() {
-        attack.action.started -= Attack;
+        attack.action.started -= Interact;
         move.action.performed -= Movement;
         move.action.canceled -= LiftMovement;
-        look.action.performed += Aim;
+        look.action.performed -= Aim;
+        menu.action.performed -= Menu;
     }
 
-    private void Attack(InputAction.CallbackContext obj) {
+    private void Interact(InputAction.CallbackContext obj) {
         if(!isMoving) {
             int num = colliderList.Count;
             if(num > 0) {
@@ -153,6 +157,10 @@ public class Player : MonoBehaviour
 
             aimedPositionSquare.transform.position = transform.position + new Vector3(input.x, input.y);
         }
+    }
+
+    private void Menu(InputAction.CallbackContext obj) {
+        inventoryUI.SetActive(!inventoryUI.activeSelf);
     }
 
     IEnumerator AttackMovement() {
