@@ -13,13 +13,13 @@ public class EquipmentManager : MonoBehaviour
 
     #endregion
 
-    Equipment[] currentEquipment;
+    public Equipment[] currentEquipment;
 
     Inventory inventory;
 
     void Start() {
         inventory = Inventory.instance;
-        int numSlots = System.Enum.GetNames(typeof(EquipmentSlot)).Length;
+        int numSlots = System.Enum.GetNames(typeof(EquipmentType)).Length;
         currentEquipment = new Equipment[numSlots];
     }
 
@@ -30,6 +30,8 @@ public class EquipmentManager : MonoBehaviour
             Equipment oldItem = currentEquipment[slotIndex];
             inventory.Add(oldItem);
         }
+
+
 
         currentEquipment[slotIndex] = newItem;
     }

@@ -19,7 +19,7 @@ public class Inventory : MonoBehaviour
     }
 
     public bool Add(Item item) {
-        if(items.Count > space) {
+        if(items.Count >= space) {
             Debug.Log("Too many items");
             return false;
         }

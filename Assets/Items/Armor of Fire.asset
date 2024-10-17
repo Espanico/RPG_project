@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3b2ce5a718d3d345a1ec4b83e361de9, type: 3}
+  m_Name: Armor of Fire
+  m_EditorClassIdentifier: 
+  name: Armor of Fire
+  icon: {fileID: 1169392502, guid: 54899cb84d1f20e41a4e4b39adbbefb2, type: 3}
+  isDefaultItem: 0
+  equipmentSlot: 1
+  armorModifier: 4
+  damageModifier: 1
