@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    public GameObject gm;
+    private GameManager gameManager;
     [Header("Combat")]
     public float maxHealth;
     [SerializeField]
@@ -22,6 +24,7 @@ public class Enemy : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = gm.GetComponent<GameManager>();
         currentHealth = maxHealth;
     }
 
@@ -50,6 +53,7 @@ public class Enemy : MonoBehaviour
         } else {
             RandomMovement();
         }
+        TurnFinished();
     }
 
     private void RandomMovement() {
@@ -156,5 +160,9 @@ public class Enemy : MonoBehaviour
     private void Attack() {
         StartCoroutine(AttackMovement());
         player.GetComponent<Player>().TakeDamage(attackDamage);
+    }
+
+    private void TurnFinished() {
+        gameManager.enemiesPerformingAction--;
     }
 }

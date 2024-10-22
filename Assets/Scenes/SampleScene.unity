@@ -2890,20 +2890,48 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6120329080511622945, guid: f063a29de1e8aff4abe8cb1cd1823794, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120329080511622945, guid: f063a29de1e8aff4abe8cb1cd1823794, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120329080511622945, guid: f063a29de1e8aff4abe8cb1cd1823794, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6120329080511622945, guid: f063a29de1e8aff4abe8cb1cd1823794, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 902177637}
     - target: {fileID: 6120329080511622945, guid: f063a29de1e8aff4abe8cb1cd1823794, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 2055046437}
+    - target: {fileID: 6120329080511622945, guid: f063a29de1e8aff4abe8cb1cd1823794, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120329080511622945, guid: f063a29de1e8aff4abe8cb1cd1823794, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: Unequip
       objectReference: {fileID: 0}
     - target: {fileID: 6120329080511622945, guid: f063a29de1e8aff4abe8cb1cd1823794, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: UpdateUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120329080511622945, guid: f063a29de1e8aff4abe8cb1cd1823794, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: EquipmentManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120329080511622945, guid: f063a29de1e8aff4abe8cb1cd1823794, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: EquipmentUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120329080511622945, guid: f063a29de1e8aff4abe8cb1cd1823794, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7764010601059324225, guid: f063a29de1e8aff4abe8cb1cd1823794, type: 3}
       propertyPath: m_Name
@@ -4074,7 +4102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0d8a95d8953d76438ce828547768c50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isPlayerTurn: 1
+  enemiesPerformingAction: 0
 --- !u!4 &902177635
 Transform:
   m_ObjectHideFlags: 0
@@ -4116,6 +4144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad6d7f830b87c594fb21568d30c6ac2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 1855189053}
   currentEquipment: []
 --- !u!1001 &903531210
 PrefabInstance:
@@ -4672,6 +4701,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca6aea22c4b939a4a95a0cd629c1daed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gm: {fileID: 902177633}
   maxHealth: 5
   currentHealth: 0
   attackDamage: 7
@@ -5097,17 +5127,17 @@ MonoBehaviour:
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
-  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
+  m_PointAction: {fileID: 4015712464061415363, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
+  m_MoveAction: {fileID: -9170609230136308603, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
+  m_SubmitAction: {fileID: -3936577947905638674, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
+  m_CancelAction: {fileID: 298807650336637245, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
+  m_LeftClickAction: {fileID: 2303951716696397363, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
+  m_MiddleClickAction: {fileID: -7041356032208250118, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
+  m_RightClickAction: {fileID: -9157105261127696865, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
+  m_ScrollWheelAction: {fileID: 4129422377120460613, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
+  m_TrackedDevicePositionAction: {fileID: -98884593143484290, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 2532026776738382494, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
@@ -6105,6 +6135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca6aea22c4b939a4a95a0cd629c1daed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gm: {fileID: 902177633}
   maxHealth: 5
   currentHealth: 0
   attackDamage: 7
@@ -7150,9 +7181,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 902177634}
+  equipment: []
   updatedPlayerPosition: {x: 0, y: 0, z: 0}
-  move: {fileID: 5283138383656555728, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
   attack: {fileID: -4415603975220468187, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
+  move: {fileID: 5283138383656555728, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
   look: {fileID: -7984370251201884606, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
   menu: {fileID: 8133257239566393404, guid: fee93d52ecec3884ea069625326e52c2, type: 3}
   inventoryUI: {fileID: 2055046431}
@@ -7167,6 +7199,7 @@ MonoBehaviour:
   maxHealth: 15
   currentHealth: 0
   startDamage: 5
+  damage: 0
   aimedPositionSquare: {fileID: 1729314007}
   colliderList: []
 --- !u!1 &1999940521

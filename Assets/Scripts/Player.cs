@@ -5,17 +5,21 @@ using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using UnityEngine.XR;
 
 public class Player : MonoBehaviour
 {
     public GameManager gameManager;
+    [SerializeField]
+    Equipment[] equipment;
     public Vector3 updatedPlayerPosition;
-    public InputActionReference move;
     public InputActionReference attack;
+    public InputActionReference move;
     public InputActionReference look;
     public InputActionReference menu;
     public GameObject inventoryUI;
     private Animator animator;
+
     [Header("Movement")]
     public float moveSpeed;
     private bool isMoving;
@@ -33,6 +37,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float currentHealth;
     public float startDamage;
+    [SerializeField]
     private float damage;
     public GameObject aimedPositionSquare;
     public List<GameObject> colliderList = new List<GameObject>();
@@ -43,12 +48,14 @@ public class Player : MonoBehaviour
         animator = GetComponent<Animator>();
         currentHealth = maxHealth;
         damage = startDamage;
+
+        UpdateStats();
     }
     
 
     void Update()
     {
-        if(gameManager.isPlayerTurn) {
+        if(gameManager.enemiesPerformingAction == 0) {
             if(!isMoving && heldMovement) {
                 input = move.action.ReadValue<Vector2>();
 
@@ -109,14 +116,21 @@ public class Player : MonoBehaviour
 
     private void Interact(InputAction.CallbackContext obj) {
         if(!isMoving) {
-            int num = colliderList.Count;
-            if(num > 0) {
-                for (int i = 0; i < num; i++)
+            int num = 0;
+            if(colliderList.Count > 0) {
+                for (int i = 0; i < colliderList.Count; i++)
                 {
                     if(colliderList[i].tag == "Enemy") {
                         colliderList[i].GetComponent<Enemy>().TakeDamage(damage);
-                    } else if(colliderList[i].tag == "Item") {
-                        colliderList[i].GetComponent<ItemPickup>().PickUp();
+                        num++;
+                    }
+                }
+                if(num==0) {
+                    for (int i = 0; i < colliderList.Count; i++)
+                    {
+                        if(colliderList[i].tag == "Item") {
+                            colliderList[i].GetComponent<ItemPickup>().PickUp();
+                        }
                     }
                 }
             }
@@ -125,7 +139,7 @@ public class Player : MonoBehaviour
     }
 
     private void Movement(InputAction.CallbackContext obj) {
-        if(gameManager.isPlayerTurn) {
+        if(gameManager.enemiesPerformingAction == 0) {
             if(!isMoving) {
                 input = move.action.ReadValue<Vector2>();
 
@@ -152,7 +166,7 @@ public class Player : MonoBehaviour
     }
 
     private void Aim(InputAction.CallbackContext obj) {
-        if(gameManager.isPlayerTurn && !isMoving) {
+        if(gameManager.enemiesPerformingAction == 0 && !isMoving) {
             input = look.action.ReadValue<Vector2>();
 
             aimedPositionSquare.transform.position = transform.position + new Vector3(input.x, input.y);
@@ -166,7 +180,7 @@ public class Player : MonoBehaviour
     IEnumerator AttackMovement() {
         isMoving = true;
         var startPosition = transform.position;
-        var attackedPosition = aimedPositionSquare.transform.position;
+        var attackedPosition = (aimedPositionSquare.transform.position+startPosition)/2;
         bool movingForward = true;
 
         while((attackedPosition - transform.position).sqrMagnitude > Mathf.Epsilon && movingForward) {
@@ -184,7 +198,7 @@ public class Player : MonoBehaviour
     }
 
     private void EndTurn() {
-        gameManager.GetComponent<GameManager>().enemiesTurn();
+        gameManager.PerformEnemiesTurn();
     }
 
     public void TakeDamage(float dmg) {
@@ -193,6 +207,18 @@ public class Player : MonoBehaviour
             Destroy(gameObject);
             Debug.Log("*** GAME OVER ***");
             Time.timeScale = 0;
+        }
+    }
+
+    public void UpdateStats() {
+        equipment = EquipmentManager.instance.currentEquipment;
+        
+        damage = startDamage;
+
+        for (int i = 0; i < equipment.Length; i++) {
+            if(equipment[i] != null) {
+                damage += equipment[i].damageModifier;
+            }
         }
     }
 }

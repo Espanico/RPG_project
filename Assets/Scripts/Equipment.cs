@@ -18,4 +18,4 @@ public class Equipment : Item
     }
 }
 
-public enum EquipmentType {Head, Chest, Legs, Weapon}
+public enum EquipmentType {Head, Chest, Legs, Hand}

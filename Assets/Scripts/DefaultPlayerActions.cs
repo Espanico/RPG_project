@@ -168,7 +168,7 @@ public partial class @DefaultPlayerActions: IInputActionCollection2, IDisposable
                     ""name"": ""2D Vector"",
                     ""id"": ""4f2c590b-f734-4b07-a5e2-4a790a8358db"",
                     ""path"": ""2DVector(mode=1)"",
-                    ""interactions"": ""Hold(duration=0.1)"",
+                    ""interactions"": ""Hold(duration=0.075)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Look"",

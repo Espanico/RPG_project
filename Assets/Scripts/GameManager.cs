@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public bool isPlayerTurn = true;
+    public int enemiesPerformingAction = 0;
     //int actions;
     List<GameObject> enemyList = new List<GameObject>();
 
     void Start()
     {
         //actions = 1;
-        findEnemies();
+        FindEnemies();
     }
 
     // Update is called once per frame
@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     {
     }
 
-    private void findEnemies() {
+    private void FindEnemies() {
         Object[] tempList = Resources.FindObjectsOfTypeAll(typeof(GameObject));
         GameObject temp;
 
@@ -33,20 +33,19 @@ public class GameManager : MonoBehaviour
 		}
     }
 
-    public void enemiesTurn() {
+    public void PerformEnemiesTurn() {
         if(enemyList.Count != 0) {
-            isPlayerTurn = false;
 
            for (int i = 0; i < enemyList.Count; i++)
             {
                 if(enemyList[i].IsDestroyed()) {
                     enemyList.RemoveAt(i);
                 } else {
+                    enemiesPerformingAction++;
                     enemyList[i].GetComponent<Enemy>().PerformAction();
                 }
             }
         }
-        isPlayerTurn = true;
     }
 
 }

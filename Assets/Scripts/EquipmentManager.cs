@@ -13,6 +13,7 @@ public class EquipmentManager : MonoBehaviour
 
     #endregion
 
+    public Player player;
     public Equipment[] currentEquipment;
 
     Inventory inventory;
@@ -34,6 +35,7 @@ public class EquipmentManager : MonoBehaviour
 
 
         currentEquipment[slotIndex] = newItem;
+        player.UpdateStats();
     }
 
     public void Unequip(int slotIndex) {
@@ -43,6 +45,7 @@ public class EquipmentManager : MonoBehaviour
 
             currentEquipment[slotIndex] = null; 
         }
+        player.UpdateStats();
     }
 
     public void UnequipAll() {
